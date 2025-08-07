@@ -10,4 +10,7 @@ export interface IUser extends Document {
   role: "user" | "admin";
   _id: Types.ObjectId;
   comparePassword: (plainPassword: string) => Promise<Boolean>;
+  passwordResetToken: string | undefined;
+  passwordResetExpires: Date | undefined;
+  createPasswordResetToken(): string;
 }

@@ -114,3 +114,32 @@ export const refresh = (req: RequestWithCookies, res: Response): void => {
     }
   );
 };
+
+export const forgotPassword = async (
+  req: Request,
+  res: Response
+): Promise<Response | void> => {
+  try {
+    const { email } = matchedData(req);
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const resetToken = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false });
+
+    const resetUrl = `${req.protocol}://${req.get(
+      "host"
+    )}/api/auth/reset-password/${resetToken}`;
+    logger.info(`Password reset link for ${user.email}: ${resetUrl}`);
+
+    return res.json({
+      message: "Password reset link have been sent to your emal",
+      resetUrl,
+    });
+  } catch (err) {
+    const error = err as Error;
+    logger.error(error.message);
+    res.status(500).json({ message: "Error occurred", error: error.message });
+  }
+};

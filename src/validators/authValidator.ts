@@ -1,7 +1,5 @@
-import { RequestHandler } from "express";
+import { Request, Response, NextFunction } from "express";
 import { checkSchema, validationResult, Schema } from "express-validator";
-
-type Middleware = RequestHandler | RequestHandler[];
 
 const registerSchema: Schema = {
   name: {
@@ -33,9 +31,19 @@ const loginSchema: Schema = {
   },
 };
 
-export const registerValidator: Middleware[] = [
-  ...checkSchema(registerSchema),
-  (req, res, next): void => {
+const forgotPasswordSchema: Schema = {
+  email: {
+    in: ["body"],
+    isEmail: {
+      errorMessage: "Provide a valid email",
+    },
+    normalizeEmail: true,
+  },
+};
+
+export const registerValidator = [
+  checkSchema(registerSchema),
+  (req: Request, res: Response, next: NextFunction): void => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.status(400).json({ errors: errors.array() });
@@ -45,14 +53,24 @@ export const registerValidator: Middleware[] = [
   },
 ];
 
-export const loginValidator: Middleware[] = [
-  ...checkSchema(loginSchema),
-  (req, res, next): void => {
+export const loginValidator = [
+  checkSchema(loginSchema),
+  (req: Request, res: Response, next: NextFunction): void => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.status(400).json({ errors: errors.array() });
       return;
     }
+    next();
+  },
+];
+
+export const forgotPasswordValidator = [
+  checkSchema(forgotPasswordSchema),
+  (req: Request, res: Response, next: NextFunction): Response | void => {
+    const error = validationResult(req);
+    if (!error.isEmpty()) return res.status(400).json({ error: error.array() });
+
     next();
   },
 ];

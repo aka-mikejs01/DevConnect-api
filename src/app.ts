@@ -8,6 +8,7 @@ import authRoutes from "./routes/authRoutes";
 import path from "path";
 import uploadRoutes from "./routes/uploadRoutes";
 import userRoutes from "./routes/userRoutes";
+import resetPasswordRoutes from "./routes/resetPasswordRoutes";
 
 dotenv.config();
 
@@ -25,6 +26,8 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/api", uploadRoutes);
 
 app.use("/api/user", userRoutes);
+
+app.use("/api/auth", resetPasswordRoutes);
 
 app.get("/", (_req, res): void => {
   res.json("DevConnect api is running...");
