@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
+import { AuthRequest } from "../types/authRequest";
 
 export const isAuthenticated = (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): void => {
@@ -19,7 +20,7 @@ export const isAuthenticated = (
       userId: string;
     };
 
-    (req as Request & { userId: string }).userId = decoded.userId;
+    req.userId = decoded.userId;
 
     next();
   } catch (err) {

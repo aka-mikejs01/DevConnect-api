@@ -10,21 +10,20 @@ import jwt from "jsonwebtoken";
 export const registerUser = async (
   req: Request<{}, {}, RegisterBody>,
   res: Response
-): Promise<void> => {
+): Promise<Response | void> => {
   try {
     const { name, email, password } = matchedData(req) as RegisterBody;
 
     const exist = await User.findOne({ email });
     if (exist) {
       logger.warn("Someone tried to register with existing email");
-      res.status(400).json({ message: "Email already in use" });
-      return;
+      return res.status(400).json({ message: "Email already in use" });
     }
 
     const user = new User({ name, email, password });
     await user.save();
 
-    logger.info(`New user registered: ${user.name}`);
+    logger.info(`New user registered: ${user.email}`);
 
     const accessToken = getAccessToken(user._id.toString());
     const refreshToken = getRefreshToken(user._id.toString());
@@ -35,11 +34,15 @@ export const registerUser = async (
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    res.status(201).json({ message: "Registered successfully", accessToken });
+    return res
+      .status(201)
+      .json({ message: "Registered successfully", accessToken });
   } catch (err) {
     if (err instanceof Error) {
       logger.error(err.message);
-      res.status(500).json({ message: "Error Occured", error: err.message });
+      return res
+        .status(500)
+        .json({ message: "Error Occured", error: err.message });
     }
   }
 };
@@ -47,23 +50,18 @@ export const registerUser = async (
 export const loginUser = async (
   req: Request<{}, {}, LoginBody>,
   res: Response
-): Promise<void> => {
+): Promise<Response | void> => {
   try {
     const { email, password } = matchedData(req) as LoginBody;
 
     const user = await User.findOne({ email });
-    if (!user) {
-      res.status(400).json({ message: "Invalid Credentials" });
-      return;
-    }
+    if (!user) return res.status(400).json({ message: "Invalid Credentials" });
 
     const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      res.status(400).json({ message: "Invalid Credentials" });
-      return;
-    }
+    if (!isMatch)
+      return res.status(400).json({ message: "Invalid Credentials" });
 
-    logger.info(`New user logged in: ${user.name}`);
+    logger.info(`New user logged in: ${user.email}`);
 
     const accessToken = getAccessToken(user._id.toString());
     const refreshToken = getRefreshToken(user._id.toString());
@@ -74,11 +72,13 @@ export const loginUser = async (
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    res.status(200).json({ message: "Login successfully", accessToken });
+    return res.status(200).json({ message: "Login successfully", accessToken });
   } catch (err) {
     if (err instanceof Error) {
       logger.error(err.message);
-      res.status(500).json({ message: "Error Occured", error: err.message });
+      return res
+        .status(500)
+        .json({ message: "Error Occured", error: err.message });
     }
   }
 };

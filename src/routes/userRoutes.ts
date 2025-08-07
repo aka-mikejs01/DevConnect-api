@@ -1,7 +1,12 @@
 import { Router } from "express";
-import { getProfile, updateProfile } from "../controllers/userController";
+import {
+  getProfile,
+  updateProfile,
+  changePassword,
+} from "../controllers/userController";
 import { isAuthenticated } from "../middleware/authMiddleware";
 import { updateProfileValidator } from "../validators/userValidator";
+import { changePasswordValidator } from "../validators/changePasswordValidator";
 
 const router = Router();
 
@@ -11,6 +16,12 @@ router.patch(
   isAuthenticated,
   ...updateProfileValidator,
   updateProfile
+);
+router.patch(
+  "/change-password",
+  isAuthenticated,
+  ...changePasswordValidator,
+  changePassword
 );
 
 export default router;

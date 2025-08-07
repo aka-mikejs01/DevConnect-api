@@ -1,21 +1,14 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import User from "../models/User";
 import logger from "../middleware/logger";
-
-interface AuthRequest extends Request {
-  userId?: string;
-}
+import { AuthRequest } from "../types/authRequest";
 
 export const uploadProfileImage = async (
   req: AuthRequest,
   res: Response
-): Promise<void> => {
+): Promise<Response | void> => {
   try {
-    if (!req.file) {
-      res.status(400).json({ message: "No file uploaded" });
-      return;
-    }
-
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
     const userId = req.userId;
 
     const profileUrl = `${req.protocol}://${req.get("host")}/uploads/${
@@ -30,7 +23,7 @@ export const uploadProfileImage = async (
 
     logger.info(`User ${userId} set profile`);
 
-    res.status(200).json({
+    return res.status(200).json({
       message: "Profile image uploaded successfully",
       profileImage: updatedUser?.profileImage,
     });
