@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/db";
 import logger from "./middleware/logger";
 import authRoutes from "./routes/authRoutes";
+import path from "path";
+import uploadRoutes from "./routes/uploadRoutes";
 
 dotenv.config();
 
@@ -16,6 +18,10 @@ app.use(morgan("combined", { stream: { write: (msg) => logger.http(msg) } }));
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
+
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
+app.use("/api", uploadRoutes);
 
 app.get("/", (_req, res): void => {
   res.json("DevConnect api is running...");
