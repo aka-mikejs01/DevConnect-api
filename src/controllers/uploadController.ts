@@ -2,8 +2,12 @@ import { Request, Response } from "express";
 import User from "../models/User";
 import logger from "../middleware/logger";
 
+interface AuthRequest extends Request {
+  userId?: string;
+}
+
 export const uploadProfileImage = async (
-  req: Request,
+  req: AuthRequest,
   res: Response
 ): Promise<void> => {
   try {
@@ -12,11 +16,15 @@ export const uploadProfileImage = async (
       return;
     }
 
-    const userId = (req as Request & { userId: string }).userId;
+    const userId = req.userId;
+
+    const profileUrl = `${req.protocol}://${req.get("host")}/uploads/${
+      req.file.filename
+    }`;
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { profileImage: req.file.filename },
+      { profileImage: profileUrl },
       { new: true }
     );
 

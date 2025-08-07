@@ -7,6 +7,7 @@ import logger from "./middleware/logger";
 import authRoutes from "./routes/authRoutes";
 import path from "path";
 import uploadRoutes from "./routes/uploadRoutes";
+import userRoutes from "./routes/userRoutes";
 
 dotenv.config();
 
@@ -22,6 +23,8 @@ app.use("/api/auth", authRoutes);
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use("/api", uploadRoutes);
+
+app.use("/api/user", userRoutes);
 
 app.get("/", (_req, res): void => {
   res.json("DevConnect api is running...");

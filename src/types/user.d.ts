@@ -6,7 +6,7 @@ export interface IUser extends Document {
   password: string;
   bio?: string;
   skills?: string[];
-  profileImage?: string;
+  profileImage?: string | null;
   role: "user" | "admin";
   _id: Types.ObjectId;
   comparePassword: (plainPassword: string) => Promise<Boolean>;

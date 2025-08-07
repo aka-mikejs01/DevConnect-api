@@ -108,7 +108,7 @@ export const refresh = (req: RequestWithCookies, res: Response): void => {
         res.status(403).json({ message: "Invalid Token" });
         return;
       }
-      const accessToken = getAccessToken(decoded.id);
+      const accessToken = getAccessToken(decoded.userId);
 
       res.json({ accessToken });
     }

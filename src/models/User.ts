@@ -19,7 +19,7 @@ const userSchema = new Schema<IUser>(
     },
     bio: { type: String },
     skills: [String],
-    profileImage: { type: String },
+    profileImage: { type: String, default: null },
     role: { type: String, enum: ["user", "admin"], default: "user" },
   },
   { timestamps: true }

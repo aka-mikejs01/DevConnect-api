@@ -23,12 +23,15 @@ export const isAuthenticated = (
 
     next();
   } catch (err) {
-    const error = err as Error;
-    if (error.name === "TokenExpiredError") {
-      res.status(403).json({ message: "Token Expired" });
-      return;
+    if (err instanceof Error) {
+      if (err.name === "TokenExpiredError") {
+        res.status(403).json({ message: "Token Expired" });
+        return;
+      } else {
+        res.status(403).json({ message: "Invalid token" });
+      }
     } else {
-      res.status(403).json({ message: "Invalid token" });
+      res.status(403).json({ message: "Unknown Error" });
     }
   }
 };
