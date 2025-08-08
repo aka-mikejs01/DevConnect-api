@@ -81,3 +81,26 @@ export const changePassword = async (
     res.status(500).json({ message: "Error Occured", error: error.message });
   }
 };
+
+export const deleteAccount = async (
+  req: AuthRequest,
+  res: Response
+): Promise<Response | void> => {
+  try {
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    await user.deleteOne();
+
+    logger.info(`User ${user.email} deleted their account`);
+
+    res.json({ message: "Account deleted successfully" });
+  } catch (err) {
+    const error = err as Error;
+    logger.error(error.message);
+    res.status(500).json({ message: "Error occurred", error: error.message });
+  }
+};

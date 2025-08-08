@@ -3,6 +3,7 @@ import {
   getProfile,
   updateProfile,
   changePassword,
+  deleteAccount,
 } from "../controllers/userController";
 import { isAuthenticated } from "../middleware/authMiddleware";
 import { updateProfileValidator } from "../validators/userValidator";
@@ -23,5 +24,6 @@ router.patch(
   ...changePasswordValidator,
   changePassword
 );
+router.delete("/delete-account", isAuthenticated, deleteAccount);
 
 export default router;
