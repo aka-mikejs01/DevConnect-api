@@ -134,7 +134,7 @@ export const forgotPassword = async (
     logger.info(`Password reset link for ${user.email}: ${resetUrl}`);
 
     return res.json({
-      message: "Password reset link have been sent to your emal",
+      message: "Password reset link have been sent to your email",
       resetUrl,
     });
   } catch (err) {
